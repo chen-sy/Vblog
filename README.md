@@ -1,8 +1,12 @@
-前后端分离的博客项目
+### Vblog项目(单体服务)
 
-    API Server: 项目骨架编写
-        Gin
-        MySQL(Grom)
-        Ioc(解决对象依赖问题: v2)
+全栈(前端+后端)
+面向的场景: 业务规模不大, 业务简单, 比较适合 工具类开发
+面向的岗位：运维开发，公司内部系统开发
 
-    Vue3(MVVM前端框架) + ArcoDesign(Vue3的UI组件库)
+前端后端分离的博客项目(很简化)
++ API Server: 项目骨架编写
+  + Gin
+  + MySQL(Grom)
+  + Ioc(解决对象依赖问题: v2)
++ Vue3(MVVM前端框架) + ArcoDesign(Vue3的UI组件库)
