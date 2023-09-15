@@ -1,13 +1,14 @@
 package user
 
-// 定义领域模型
+// 定义用户实体对象
 type User struct {
 	// 用户id
-	ID int
-	// 用户名称
-	UserName string
-	// 用户密码
-	PassWord string
-	// 创建时间戳
-	CreateAt int
+	Id int64 `json:"id"`
+	// 创建时间
+	CreatedAt int64 `json:"create_at"`
+	// 更新时间
+	UpdatedAt int64 `json:"update_at"`
+	// 状态
+	State int `json:"state"`
+	*CreateUserRequest
 }
