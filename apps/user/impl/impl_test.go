@@ -15,7 +15,15 @@ var (
 )
 
 func TestCreateUser(t *testing.T) {
-	u, err := userSvc.CreateUser(ctx, &user.CreateUserRequest{})
+	u, err := userSvc.CreateUser(ctx, &user.CreateUserRequest{UserName: "chensy", PassWord: "123456"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(u)
+}
+
+func TestGetSingleUser(t *testing.T) {
+	u, err := userSvc.GetSingleUser(ctx, &user.GetSingleUserRequest{Param: user.QUERY_BY_USERNAME, Value: "chensy"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -23,10 +31,18 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
-	err := userSvc.DeleteUser(ctx, &user.DeleteUserRequest{})
+	err := userSvc.DeleteUser(ctx, &user.DeleteUserRequest{Id: 1})
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestUpdateUser(t *testing.T) {
+	i, err := userSvc.UpdateUser(ctx, &user.UpdateUserRequest{Id: 1, PassWord: "666666"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(i)
 }
 
 func TestUserToDB(t *testing.T) {

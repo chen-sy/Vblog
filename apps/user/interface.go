@@ -17,11 +17,13 @@ type Service interface {
 	GetSingleUser(ctx context.Context, req *GetSingleUserRequest) (*User, error)
 }
 
-func NewCreateUserRequest() *CreateUserRequest {
+// 用户请求的构造函数，用于初始化用户请求的数据，防止空指针
+func NewCreateUserRequest(req *CreateUserRequest) *CreateUserRequest {
 	return &CreateUserRequest{
-		Sex:   SEX_UNKNOWN,
-		Role:  ROLE_MEMBER,
-		State: STATE_NORMAL,
+		UserName: req.UserName,
+		PassWord: req.PassWord,
+		Role:     ROLE_MEMBER,
+		State:    STATE_NORMAL,
 	}
 }
 
@@ -31,8 +33,6 @@ type CreateUserRequest struct {
 	UserName string `json:"username"`
 	// 用户密码
 	PassWord string `json:"password"`
-	// 用户性别
-	Sex Sex `json:"sex"`
 	// 用户角色
 	Role Role `json:"role"`
 	// 用户状态
@@ -57,7 +57,6 @@ type UpdateUserRequest struct {
 	Id       int    `json:"id"`
 	UserName string `json:"username"`
 	PassWord string `json:"password"`
-	Sex      Sex    `json:"sex"`
 	State    int    `json:"state"`
 }
 

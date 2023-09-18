@@ -6,7 +6,7 @@ import "gitee.com/chensyi/vblog/common"
 func NewUser(req *CreateUserRequest) *User {
 	return &User{
 		Meta:              common.NewMeta(),
-		CreateUserRequest: req,
+		CreateUserRequest: NewCreateUserRequest(req),
 	}
 }
 

@@ -63,11 +63,13 @@ func (i *UserServiceImpl) GetSingleUser(ctx context.Context, req *user.GetSingle
 	case user.QUERY_BY_ID:
 		query = query.Where("id=?", req.Value)
 	case user.QUERY_BY_USERNAME:
-		query = query.Where("username=?", req.Value)
+		query = query.Where("user_name=?", req.Value)
 	default:
 		return nil, fmt.Errorf("参数有误")
 	}
-	u := user.NewUser(user.NewCreateUserRequest())
+	//db.Where("name = ?", "jinzhu").First(&user)
+	//u := user.NewUser(user.NewCreateUserRequest())
+	u := &user.User{}
 	if err := query.First(u).Error; err != nil {
 		return nil, err
 	}
@@ -84,7 +86,7 @@ func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *user.UpdateUserRe
 	if err != nil {
 		return 0, err
 	}
-	result := i.db.Model(u).Updates(map[string]interface{}{"username": req.UserName, "password": req.PassWord, "sex": req.Sex, "State": req.State})
+	result := i.db.Model(u).Updates(map[string]interface{}{"user_name": req.UserName, "pass_word": req.PassWord})
 	return result.RowsAffected, result.Error
 }
 
