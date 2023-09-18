@@ -2,6 +2,8 @@ package impl
 
 import (
 	"context"
+	"fmt"
+	"strconv"
 
 	"gitee.com/chensyi/vblog/apps/user"
 	"gitee.com/chensyi/vblog/conf"
@@ -9,20 +11,19 @@ import (
 )
 
 // 在我们不知道结构体是否实现某接口时，可以用显示声明接口实现的语句，明确约束接口的实现，下面两种都可以检查是否实现接口
+// var _ user.Service = (*UserServiceImpl)(nil)
 var _ user.Service = &UserServiceImpl{}
-
-//var _ user.Service = (*UserServiceImpl)(nil)
-
-// 用户接口的实现
-type UserServiceImpl struct {
-	db *gorm.DB
-}
 
 // 构造函数
 func NewUserServiceImpl() *UserServiceImpl {
 	return &UserServiceImpl{
 		db: conf.C().MySQL.GetConn(),
 	}
+}
+
+// 用户接口的实现
+type UserServiceImpl struct {
+	db *gorm.DB
 }
 
 // 创建用户
@@ -32,37 +33,59 @@ func (i *UserServiceImpl) CreateUser(ctx context.Context, req *user.CreateUserRe
 		return nil, err
 	}
 	// 2. 使用构造函数创建一个User对象
-	req.UserName = "tom"
-	req.PassWord = "111111"
-	req.Sex = 1
-	req.Role = 0
-	u := user.User{
-		Id:                1,
-		CreatedAt:         10120021,
-		UpdatedAt:         10120021,
-		State:             1,
-		CreateUserRequest: req,
-	}
+	u := user.NewUser(req)
 	// 3. 保存到数据库
-	i.db.Create(u)
-
+	if err := i.db.WithContext(ctx).Create(u).Error; err != nil {
+		return nil, err
+	}
 	// 4. 返回结果
-	return nil, nil
+	return u, nil
 }
 
 // 删除用户
 func (i *UserServiceImpl) DeleteUser(ctx context.Context, req *user.DeleteUserRequest) error {
-	return nil
+	// 查询用户是否存在
+	u, err := i.GetSingleUser(ctx, &user.GetSingleUserRequest{
+		Param: user.QUERY_BY_ID,
+		Value: strconv.Itoa(req.Id),
+	})
+	if err != nil {
+		return err
+	}
+	return i.db.WithContext(ctx).Delete(u).Error
 }
 
-// GetUser implements user.Service.
-func (*UserServiceImpl) GetUser(ctx context.Context, req *user.GetUserRequest) (*user.User, error) {
-	panic("unimplemented")
+// 查询单个用户
+func (i *UserServiceImpl) GetSingleUser(ctx context.Context, req *user.GetSingleUserRequest) (*user.User, error) {
+	query := i.db.WithContext(ctx)
+	// 构造查询条件
+	switch req.Param {
+	case user.QUERY_BY_ID:
+		query = query.Where("id=?", req.Value)
+	case user.QUERY_BY_USERNAME:
+		query = query.Where("username=?", req.Value)
+	default:
+		return nil, fmt.Errorf("参数有误")
+	}
+	u := user.NewUser(user.NewCreateUserRequest())
+	if err := query.First(u).Error; err != nil {
+		return nil, err
+	}
+	return u, nil
 }
 
 // UpdateUser implements user.Service.
-func (*UserServiceImpl) UpdateUser(ctx context.Context, req *user.UpdateUserRequest) (*user.User, error) {
-	panic("unimplemented")
+func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *user.UpdateUserRequest) (int64, error) {
+	// 查询用户是否存在
+	u, err := i.GetSingleUser(ctx, &user.GetSingleUserRequest{
+		Param: user.QUERY_BY_ID,
+		Value: strconv.Itoa(req.Id),
+	})
+	if err != nil {
+		return 0, err
+	}
+	result := i.db.Model(u).Updates(map[string]interface{}{"username": req.UserName, "password": req.PassWord, "sex": req.Sex, "State": req.State})
+	return result.RowsAffected, result.Error
 }
 
 // grom自动创建表
