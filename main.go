@@ -2,27 +2,36 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
+	"os"
+
+	tokenApi "gitee.com/chensyi/vblog/apps/token/api"
+	tokenImpl "gitee.com/chensyi/vblog/apps/token/impl"
+	userImpl "gitee.com/chensyi/vblog/apps/user/impl"
+	"gitee.com/chensyi/vblog/conf"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// 初始化配置
-	//cfg := config.NewConfig()
-	// 绑定路由
-	http.HandleFunc("/hello", helloHandler)
-	// 启动服务
-	err := http.ListenAndServe(":8080", nil) //http://127.0.0.1:8080/hello
+	// 加载配置
+	err := conf.LoadConfigFromToml("etc/application.toml")
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
-}
 
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	name := r.URL.Query().Get("name")
-	if name == "" {
-		//TODO 默认欢迎语改为可配置
-		name = "Hello,World!"
-	}
-	fmt.Fprintf(w, "%s\n", name)
+	// 初始化控制器
+	usi := userImpl.NewUserServiceImpl()
+	tsi := tokenImpl.NewTokenServiceImpl(usi)
+	// 初始化handler
+	tah := tokenApi.NewTokenApiHandler(tsi)
+
+	// 通过gin注册handler路由
+	r := gin.Default()
+	tah.Registry(r.Group("/api/vblog"))
+
+	// 启动服务
+	addr := conf.C().App.HTTPAddr()
+	fmt.Printf("HTTP API监听地址: %s", addr)
+	err = r.Run(addr)
+	fmt.Println(err)
 }

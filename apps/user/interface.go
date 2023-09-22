@@ -3,6 +3,8 @@ package user
 import (
 	"context"
 	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // 定义用户接口
@@ -30,9 +32,9 @@ func NewCreateUserRequest(req *CreateUserRequest) *CreateUserRequest {
 // 创建用户的请求
 type CreateUserRequest struct {
 	// 用户名称
-	UserName string `json:"username"`
+	UserName string `json:"username" gorm:"column:username;not null"`
 	// 用户密码
-	PassWord string `json:"password"`
+	PassWord string `json:"password" gorm:"column:password;not null"`
 	// 用户角色
 	Role Role `json:"role"`
 	// 用户状态
@@ -60,12 +62,28 @@ type UpdateUserRequest struct {
 	State    int    `json:"state"`
 }
 
+// 密码加密
+func (req *UpdateUserRequest) PassWordHash() {
+	b, _ := bcrypt.GenerateFromPassword([]byte(req.PassWord), bcrypt.DefaultCost)
+	req.PassWord = string(b)
+}
+
 // 查询单个用户的请求
 type GetSingleUserRequest struct {
 	Param QueryBy `json:"param"`
 	Value string  `json:"value"`
 }
 
-func GetSingleUserByID(id int) {
+func NewGetSingleUserByID(id string) *GetSingleUserRequest {
+	return &GetSingleUserRequest{
+		Param: QUERY_BY_ID,
+		Value: id,
+	}
+}
 
+func NewGetSingleUserByName(name string) *GetSingleUserRequest {
+	return &GetSingleUserRequest{
+		Param: QUERY_BY_USERNAME,
+		Value: name,
+	}
 }

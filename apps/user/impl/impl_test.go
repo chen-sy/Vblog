@@ -2,6 +2,8 @@ package impl_test
 
 import (
 	"context"
+	"crypto/md5"
+	"encoding/hex"
 	"testing"
 
 	"gitee.com/chensyi/vblog/apps/user"
@@ -15,7 +17,7 @@ var (
 )
 
 func TestCreateUser(t *testing.T) {
-	u, err := userSvc.CreateUser(ctx, &user.CreateUserRequest{UserName: "chensy", PassWord: "123456"})
+	u, err := userSvc.CreateUser(ctx, &user.CreateUserRequest{UserName: "test001", PassWord: "123456"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +40,7 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
-	i, err := userSvc.UpdateUser(ctx, &user.UpdateUserRequest{Id: 1, PassWord: "666666"})
+	i, err := userSvc.UpdateUser(ctx, &user.UpdateUserRequest{Id: 5, PassWord: "666666"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -56,4 +58,14 @@ func init() {
 	test.DevelopmentSetup()
 	userSvc = impl.NewUserServiceImpl()
 
+}
+
+func TestMD5(t *testing.T) {
+	h := md5.New()
+	_, err := h.Write([]byte("123456"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := hex.EncodeToString(h.Sum(nil))
+	t.Log(s)
 }
