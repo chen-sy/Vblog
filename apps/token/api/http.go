@@ -49,9 +49,9 @@ func (t *TokenApiHandler) Login(c *gin.Context) {
 
 // Logout HandleFunc
 func (t *TokenApiHandler) Logout(c *gin.Context) {
-	// 声明一个LoginRequest对象
+	// 声明一个LogoutRequest对象
 	tReq := token.NewLogoutRequest()
-	// 将http请求的json ---> LoginRequest对象
+	// 将http请求的json ---> LogoutRequest对象
 	err := c.BindJSON(tReq)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())

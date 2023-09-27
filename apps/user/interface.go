@@ -2,8 +2,8 @@ package user
 
 import (
 	"context"
-	"fmt"
 
+	"gitee.com/chensyi/vblog/exception"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -44,7 +44,7 @@ type CreateUserRequest struct {
 // 检查参数
 func (req *CreateUserRequest) Validate() error {
 	if req.UserName == "" || req.PassWord == "" {
-		return fmt.Errorf("用户名或密码不能为空")
+		return exception.ValidateError("用户名或密码不能为空")
 	}
 	return nil
 }
