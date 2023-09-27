@@ -2,17 +2,16 @@ package impl_test
 
 import (
 	"context"
-	"crypto/md5"
-	"encoding/hex"
 	"testing"
 
 	"gitee.com/chensyi/vblog/apps/user"
 	"gitee.com/chensyi/vblog/apps/user/impl"
+	"gitee.com/chensyi/vblog/ioc"
 	"gitee.com/chensyi/vblog/test"
 )
 
 var (
-	userSvc *impl.UserServiceImpl
+	userSvc user.Service
 	ctx     = context.Background()
 )
 
@@ -56,16 +55,6 @@ func TestUserToDB(t *testing.T) {
 
 func init() {
 	test.DevelopmentSetup()
-	userSvc = impl.NewUserServiceImpl()
+	userSvc = ioc.Controller().Get(user.AppName).(user.Service)
 
-}
-
-func TestMD5(t *testing.T) {
-	h := md5.New()
-	_, err := h.Write([]byte("123456"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	s := hex.EncodeToString(h.Sum(nil))
-	t.Log(s)
 }

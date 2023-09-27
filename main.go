@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	tokenApi "gitee.com/chensyi/vblog/apps/token/api"
-	tokenImpl "gitee.com/chensyi/vblog/apps/token/impl"
-	userImpl "gitee.com/chensyi/vblog/apps/user/impl"
 	"gitee.com/chensyi/vblog/conf"
+	"gitee.com/chensyi/vblog/ioc"
 	"github.com/gin-gonic/gin"
+
+	// 注册对象
+	_ "gitee.com/chensyi/vblog/apps"
 )
 
 func main() {
@@ -19,15 +20,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 初始化控制器
-	usi := userImpl.NewUserServiceImpl()
-	tsi := tokenImpl.NewTokenServiceImpl(usi)
-	// 初始化handler
-	tah := tokenApi.NewTokenApiHandler(tsi)
+	// 初始化Controller
+	if err := ioc.Controller().Init(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
-	// 通过gin注册handler路由
+	// 初始化ApiHandler
+	if err := ioc.ApiHandler().Init(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	// 通过ioc注册handler路由
 	r := gin.Default()
-	tah.Registry(r.Group("/api/vblog"))
+	ioc.ApiHandler().RouteRegistry(r.Group("/api"))
 
 	// 启动服务
 	addr := conf.C().App.HTTPAddr()

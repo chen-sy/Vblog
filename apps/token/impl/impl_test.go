@@ -6,17 +6,17 @@ import (
 
 	"gitee.com/chensyi/vblog/apps/token"
 	"gitee.com/chensyi/vblog/apps/token/impl"
-	userImpl "gitee.com/chensyi/vblog/apps/user/impl"
+	"gitee.com/chensyi/vblog/ioc"
 	"gitee.com/chensyi/vblog/test"
 )
 
 var (
-	tokenSvc *impl.TokenServiceImpl
+	tokenSvc token.Service
 	ctx      = context.Background()
 )
 
 func TestLogin(t *testing.T) {
-	u, err := tokenSvc.Login(ctx, &token.LoginRequest{UserName: "chensy", PassWord: "123456"})
+	u, err := tokenSvc.Login(ctx, &token.LoginRequest{UserName: "test001", PassWord: "123456"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,6 +47,6 @@ func TestUserToDB(t *testing.T) {
 
 func init() {
 	test.DevelopmentSetup()
-	tokenSvc = impl.NewTokenServiceImpl(userImpl.NewUserServiceImpl())
+	tokenSvc = ioc.Controller().Get(token.AppName).(token.Service)
 
 }

@@ -7,24 +7,33 @@ import (
 
 	"gitee.com/chensyi/vblog/apps/user"
 	"gitee.com/chensyi/vblog/conf"
+	"gitee.com/chensyi/vblog/ioc"
 	"gorm.io/gorm"
 )
+
+func init() {
+	ioc.Controller().Registry(&UserServiceImpl{})
+}
 
 // 在我们不知道结构体是否实现某接口时，可以用显示声明接口实现的语句，明确约束接口的实现，下面两种都可以检查是否实现接口
 // var _ user.Service = (*UserServiceImpl)(nil)
 var _ user.Service = &UserServiceImpl{}
 
-// 构造函数
-func NewUserServiceImpl() *UserServiceImpl {
-	return &UserServiceImpl{
-		// 通过debug可以查看sql语句
-		db: conf.C().MySQL.GetConn().Debug(),
-	}
-}
-
 // 用户接口的实现
 type UserServiceImpl struct {
 	db *gorm.DB
+}
+
+// 托管到ioc里面的名称
+func (i *UserServiceImpl) Name() string {
+	return user.AppName
+}
+
+// 实现ioc的init，让ioc来初始化对象
+func (i *UserServiceImpl) Init() error {
+	// 通过debug可以查看sql语句
+	i.db = conf.C().MySQL.GetConn().Debug()
+	return nil
 }
 
 // 创建用户

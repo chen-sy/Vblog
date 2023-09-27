@@ -4,17 +4,25 @@ import (
 	"net/http"
 
 	"gitee.com/chensyi/vblog/apps/token"
+	"gitee.com/chensyi/vblog/ioc"
 	"github.com/gin-gonic/gin"
 )
 
-func NewTokenApiHandler(tokenImpl token.Service) *TokenApiHandler {
-	return &TokenApiHandler{
-		tokenSvc: tokenImpl,
-	}
+func init() {
+	ioc.ApiHandler().Registry(&TokenApiHandler{})
 }
 
 type TokenApiHandler struct {
 	tokenSvc token.Service
+}
+
+func (t *TokenApiHandler) Name() string {
+	return token.AppName
+}
+
+func (t *TokenApiHandler) Init() error {
+	t.tokenSvc = ioc.Controller().Get(token.AppName).(token.Service)
+	return nil
 }
 
 // 注册路由

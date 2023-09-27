@@ -7,6 +7,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const (
+	AppName = "user"
+)
+
 // 定义用户接口
 type Service interface {
 	// 创建用户

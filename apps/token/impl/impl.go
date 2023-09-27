@@ -6,16 +6,14 @@ import (
 	"gitee.com/chensyi/vblog/apps/token"
 	"gitee.com/chensyi/vblog/apps/user"
 	"gitee.com/chensyi/vblog/conf"
+	"gitee.com/chensyi/vblog/ioc"
 	"gorm.io/gorm"
 )
 
 var _ token.Service = &TokenServiceImpl{}
 
-func NewTokenServiceImpl(userImpl user.Service) *TokenServiceImpl {
-	return &TokenServiceImpl{
-		db:   conf.C().MySQL.GetConn().Debug(),
-		user: userImpl,
-	}
+func init() {
+	ioc.Controller().Registry(&TokenServiceImpl{})
 }
 
 type TokenServiceImpl struct {
@@ -23,6 +21,16 @@ type TokenServiceImpl struct {
 	db *gorm.DB
 	// token依赖用户模块，引入user
 	user user.Service
+}
+
+func (i *TokenServiceImpl) Name() string {
+	return token.AppName
+}
+
+func (i *TokenServiceImpl) Init() error {
+	i.db = conf.C().MySQL.GetConn().Debug()
+	i.user = ioc.Controller().Get(user.AppName).(user.Service)
+	return nil
 }
 
 // 用户登录
