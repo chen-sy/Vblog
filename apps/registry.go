@@ -9,5 +9,6 @@ import (
 	_ "gitee.com/chensyi/vblog/apps/user/impl"
 
 	// Api Handler注册
+	_ "gitee.com/chensyi/vblog/apps/blog/api"
 	_ "gitee.com/chensyi/vblog/apps/token/api"
 )

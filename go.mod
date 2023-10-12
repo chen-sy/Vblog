@@ -3,6 +3,7 @@ module gitee.com/chensyi/vblog
 go 1.21.0
 
 require (
+	dario.cat/mergo v1.0.0
 	github.com/BurntSushi/toml v1.3.2
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/gin-gonic/gin v1.9.1
