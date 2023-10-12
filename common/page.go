@@ -1,6 +1,10 @@
 package common
 
-import "gorm.io/gorm"
+import (
+	"strconv"
+
+	"gorm.io/gorm"
+)
 
 // 默认第一页，每页10条数据
 func NewPagination() *Pagination {
@@ -32,5 +36,19 @@ func Paginate(pageIndex int, pageSize int) func(db *gorm.DB) *gorm.DB {
 		}
 		offset := (pageIndex - 1) * pageSize
 		return db.Offset(offset).Limit(pageSize)
+	}
+}
+
+func (i *Pagination) ParsePageIndex(s string) {
+	psInt, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		i.PageIndex = int(psInt)
+	}
+}
+
+func (i *Pagination) ParsePageSize(s string) {
+	psInt, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		i.PageSize = int(psInt)
 	}
 }

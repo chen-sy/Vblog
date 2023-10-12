@@ -13,6 +13,10 @@ func (t BlogType) isValid() bool {
 	return t < end
 }
 
+func (t BlogType) Set(x BlogType) *BlogType {
+	return &x
+}
+
 // 文章可见范围，全部可见/仅我可见
 type VisibleRange uint8
 
@@ -26,6 +30,10 @@ func (v VisibleRange) isValid() bool {
 	return v < range_end
 }
 
+func (v VisibleRange) Set(x VisibleRange) *VisibleRange {
+	return &x
+}
+
 // 文章状态，草稿/已发布
 type States uint32
 
@@ -33,6 +41,10 @@ const (
 	STATES_DRAFT     States = iota // 草稿
 	STATES_PUBLISHED               // 已发布
 )
+
+func (s States) Set(x States) *States {
+	return &x
+}
 
 // 更新模式，全量更新/增量更新
 type UpdateMode int

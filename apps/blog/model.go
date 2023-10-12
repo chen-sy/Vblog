@@ -21,7 +21,7 @@ type Blog struct {
 	// 用户传递的请求
 	*CreateBlogRequest
 	// 发布时间
-	PublishedAt int64 `json:"publishedAt"`
+	PublishedAt int64 `json:"published_at"`
 }
 
 func (b *Blog) String() string {

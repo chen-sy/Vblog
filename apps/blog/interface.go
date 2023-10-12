@@ -46,13 +46,13 @@ type CreateBlogRequest struct {
 	// 摘要，会在推荐、列表等场景外露
 	Abstract string `json:"abstract"`
 	// 类型，默认原创
-	BlogType BlogType `json:"blogType"`
+	BlogType BlogType `json:"blog_type"`
 	// 类型为转载时，填写原文链接
-	OriginalLink string `json:"originalLink"`
+	OriginalLink string `json:"original_link"`
 	// 可见范围，默认全部
-	VisibleRange VisibleRange `json:"VisibleRange"`
-	// 创建人即作者, 通过当前登录人的Token获取
-	CreateBy string `json:"createBy"`
+	VisibleRange VisibleRange `json:"visible_range"`
+	// 创建人即作者, 通过上下文中的user对象获取
+	CreateBy string `json:"create_by"`
 	// 状态，由用户控制是否发布，默认草稿
 	States States `json:"states"`
 }
@@ -79,17 +79,33 @@ func (req *CreateBlogRequest) Validate() error {
 }
 
 type DeleteBlogRequest struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
+}
+
+func NewPutUpdateBlogRequest(id string) *UpdateBlogRequest {
+	return &UpdateBlogRequest{
+		Id:                id,
+		UpdateMode:        UPDATE_MODE_PUT,
+		CreateBlogRequest: NewCreateBlogRequest(),
+	}
+}
+
+func NewPatchUpdateBlogRequest(id string) *UpdateBlogRequest {
+	return &UpdateBlogRequest{
+		Id:                id,
+		UpdateMode:        UPDATE_MODE_PATCH,
+		CreateBlogRequest: NewCreateBlogRequest(),
+	}
 }
 
 type UpdateBlogRequest struct {
-	Id         int        `json:"id"`
-	UpdateMode UpdateMode `json:"updateMode"`
+	Id         string     `json:"id"`
+	UpdateMode UpdateMode `json:"update_mode"`
 	*CreateBlogRequest
 }
 
 type GetBlogDetailsRequest struct {
-	Id int `json:"id"`
+	Id string `json:"id"`
 }
 
 func NewGetBlogListRequest() *GetBlogListRequest {
@@ -104,9 +120,9 @@ type GetBlogListRequest struct {
 	// 基于文章标题的关键字搜索
 	Keywords string `json:"keywords"`
 	// 类型
-	BlogType *BlogType `json:"blogType"`
+	BlogType *BlogType `json:"blog_type"`
 	// 可见范围
-	VisibleRange *VisibleRange `json:"VisibleRange"`
+	VisibleRange *VisibleRange `json:"visible_range"`
 	// 状态
 	States *States `json:"states"`
 }

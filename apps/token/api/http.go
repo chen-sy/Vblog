@@ -51,6 +51,8 @@ func (t *TokenApiHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+	// 通过gin把access_token写到浏览器
+	c.SetCookie(token.TOKEN_COOKIE_NAME, ins.AccessToken, 0, "/", "localhost", false, true)
 	// 返回响应
 	c.JSON(http.StatusOK, ins)
 }

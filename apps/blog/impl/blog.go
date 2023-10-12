@@ -7,6 +7,7 @@ import (
 
 	"dario.cat/mergo"
 	"gitee.com/chensyi/vblog/apps/blog"
+	"gitee.com/chensyi/vblog/apps/user"
 	"gitee.com/chensyi/vblog/common"
 )
 
@@ -20,6 +21,12 @@ func (i *blogServiceImpl) CreateBlog(ctx context.Context, req *blog.CreateBlogRe
 	}
 	// 使用构造函数创建对象
 	ins := blog.NewBlog(req)
+	// 获取上下文中的userid
+	uObj := ctx.Value(user.USER_KEY).(*user.User)
+	if uObj == nil {
+		return nil, fmt.Errorf("上下文中的user对象不存在")
+	}
+	ins.CreateBy = uObj.UserName
 	// 发布博客时，添加发布时间
 	if req.States == blog.STATES_PUBLISHED {
 		ins.PublishedAt = time.Now().Unix()
@@ -29,7 +36,6 @@ func (i *blogServiceImpl) CreateBlog(ctx context.Context, req *blog.CreateBlogRe
 		return nil, err
 	}
 	return ins, nil
-
 }
 
 // 删除博客
@@ -39,7 +45,7 @@ func (i *blogServiceImpl) DeleteBlog(ctx context.Context, req *blog.DeleteBlogRe
 	if err != nil {
 		return err
 	}
-	//db.Scopes(CurBlog(r)).Delete(b)
+	//TODO删除博客需要校验是否为本人，和更新一样需要校验，可使用gorm.Scopes复用。db.Scopes(CurBlog(r)).Delete(b)
 	return i.db.WithContext(ctx).Delete(b).Error
 }
 
@@ -62,7 +68,12 @@ func (i *blogServiceImpl) UpdateBlog(ctx context.Context, req *blog.UpdateBlogRe
 	default:
 		return nil, fmt.Errorf("更新模式异常: %d", req.UpdateMode)
 	}
-	err = i.db.WithContext(ctx).Model(ins).Where("id = ? and create_by = ?", ins.ID, ins.CreateBy).Updates(ins).Error
+	// 获取上下文中的userid
+	uObj := ctx.Value(user.USER_KEY).(*user.User)
+	if uObj == nil {
+		return nil, fmt.Errorf("上下文中的user对象不存在")
+	}
+	err = i.db.WithContext(ctx).Model(ins).Where("id = ? and create_by = ?", ins.ID, uObj.UserName).Updates(ins).Error
 	if err != nil {
 		return nil, err
 	}
@@ -99,6 +110,12 @@ func (i *blogServiceImpl) GetBlogList(ctx context.Context, req *blog.GetBlogList
 	if req.States != nil {
 		query = query.Where("states = ?", *req.States)
 	}
+	// 获取上下文中的userid
+	uObj := ctx.Value(user.USER_KEY).(*user.User)
+	if uObj == nil {
+		return nil, fmt.Errorf("上下文中的user对象不存在")
+	}
+	query = query.Where("create_by = ?", uObj.UserName)
 	// 查询总数
 	err := query.Count(&list.Total).Error
 	if err != nil {

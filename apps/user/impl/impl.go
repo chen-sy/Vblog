@@ -84,7 +84,7 @@ func (i *UserServiceImpl) GetSingleUser(ctx context.Context, req *user.GetSingle
 	return u, nil
 }
 
-// UpdateUser implements user.Service.
+// 更新用户
 func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *user.UpdateUserRequest) (int64, error) {
 	// 查询用户是否存在
 	uReq := user.NewGetSingleUserByID(strconv.Itoa(req.Id))
@@ -102,6 +102,15 @@ func (i *UserServiceImpl) UpdateUser(ctx context.Context, req *user.UpdateUserRe
 	req.PassWord = u.PassWord
 	result := i.db.Model(u).Updates(map[string]interface{}{"username": req.UserName, "password": req.PassWord})
 	return result.RowsAffected, result.Error
+}
+
+// 通过用户id查询
+func (i *UserServiceImpl) GetUserByID(ctx context.Context, id int64) (*user.User, error) {
+	u := &user.User{}
+	if err := i.db.WithContext(ctx).Where("id=?", id).First(u).Error; err != nil {
+		return nil, err
+	}
+	return u, nil
 }
 
 // grom自动创建表

@@ -7,7 +7,7 @@ import (
 	"gitee.com/chensyi/vblog/conf"
 )
 
-func (i *blogServiceImpl) getBlog(ctx context.Context, id int) (*blog.Blog, error) {
+func (i *blogServiceImpl) getBlog(ctx context.Context, id string) (*blog.Blog, error) {
 	query := i.db.WithContext(ctx).Model(&blog.Blog{})
 	ins := &blog.Blog{}
 	query = query.Where("id=?", id)

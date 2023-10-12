@@ -27,7 +27,7 @@ func TestCreateBlog(t *testing.T) {
 	t.Log(ins)
 }
 func TestDeleteUser(t *testing.T) {
-	err := svc.DeleteBlog(ctx, &blog.DeleteBlogRequest{Id: 1})
+	err := svc.DeleteBlog(ctx, &blog.DeleteBlogRequest{Id: "6"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,7 +35,7 @@ func TestDeleteUser(t *testing.T) {
 func TestUpdateBlogPut(t *testing.T) {
 	in := blog.NewCreateBlogRequest()
 	in.Title = "我被更新了2222"
-	i, err := svc.UpdateBlog(ctx, &blog.UpdateBlogRequest{Id: 1, UpdateMode: blog.UPDATE_MODE_PUT, CreateBlogRequest: in})
+	i, err := svc.UpdateBlog(ctx, &blog.UpdateBlogRequest{Id: "6", UpdateMode: blog.UPDATE_MODE_PUT, CreateBlogRequest: in})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -44,7 +44,7 @@ func TestUpdateBlogPut(t *testing.T) {
 func TestUpdateBlogPatch(t *testing.T) {
 	in := blog.NewCreateBlogRequest()
 	in.Content = "我又被更新了"
-	i, err := svc.UpdateBlog(ctx, &blog.UpdateBlogRequest{Id: 1, UpdateMode: blog.UPDATE_MODE_PATCH, CreateBlogRequest: in})
+	i, err := svc.UpdateBlog(ctx, &blog.UpdateBlogRequest{Id: "6", UpdateMode: blog.UPDATE_MODE_PATCH, CreateBlogRequest: in})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,7 +52,7 @@ func TestUpdateBlogPatch(t *testing.T) {
 }
 
 func TestGetBlogDetails(t *testing.T) {
-	ins, err := svc.GetBlogDetails(ctx, &blog.GetBlogDetailsRequest{Id: 1})
+	ins, err := svc.GetBlogDetails(ctx, &blog.GetBlogDetailsRequest{Id: "1"})
 	if err != nil {
 		t.Fatal(err)
 	}

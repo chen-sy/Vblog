@@ -37,3 +37,7 @@ const (
 	QUERY_BY_ID QueryBy = iota
 	QUERY_BY_USERNAME
 )
+
+const (
+	USER_KEY = "user"
+)

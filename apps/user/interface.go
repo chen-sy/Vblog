@@ -21,6 +21,8 @@ type Service interface {
 	UpdateUser(ctx context.Context, req *UpdateUserRequest) (int64, error)
 	// 查询单个用户
 	GetSingleUser(ctx context.Context, req *GetSingleUserRequest) (*User, error)
+	// 通过id查用户
+	GetUserByID(ctx context.Context, id int64) (*User, error)
 }
 
 // 用户请求的构造函数，用于初始化用户请求的数据，防止空指针
