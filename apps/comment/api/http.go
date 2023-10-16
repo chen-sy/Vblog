@@ -1,7 +1,7 @@
 package api
 
 import (
-	"gitee.com/chensyi/vblog/apps/blog"
+	"gitee.com/chensyi/vblog/apps/comment"
 	"gitee.com/chensyi/vblog/ioc"
 )
 
@@ -10,14 +10,14 @@ func init() {
 }
 
 type apiHandler struct {
-	svc blog.Service
+	svc comment.Service
 }
 
 func (h *apiHandler) Name() string {
-	return blog.AppName
+	return comment.AppName
 }
 
 func (h *apiHandler) Init() error {
-	h.svc = ioc.Controller().Get(blog.AppName).(blog.Service)
+	h.svc = ioc.Controller().Get(comment.AppName).(comment.Service)
 	return nil
 }

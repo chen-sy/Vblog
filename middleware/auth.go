@@ -1,19 +1,15 @@
 package middleware
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
 	"gitee.com/chensyi/vblog/apps/token"
 	"gitee.com/chensyi/vblog/apps/user"
+	"gitee.com/chensyi/vblog/exception"
 	"gitee.com/chensyi/vblog/ioc"
 	"gitee.com/chensyi/vblog/response"
 	"github.com/gin-gonic/gin"
-)
-
-var (
-	ctx = context.Background()
 )
 
 func NewTokenAuther() *TokenAuther {
@@ -48,33 +44,31 @@ func (a *TokenAuther) Auth(c *gin.Context) {
 		response.Failed(c, err)
 		return
 	}
-	// 将鉴权后得到的token对象放到gin请求上下文中
+	// 将鉴权后得到的token对象放到gin中
 	if c.Keys == nil {
 		c.Keys = map[string]any{}
 	}
 	c.Keys[token.TOKEN_GIN_KEY_NAME] = tk
+}
+
+// 权限控制
+func (a *TokenAuther) Perm(c *gin.Context) {
+	tkObj := c.Keys[token.TOKEN_GIN_KEY_NAME]
+	if tkObj == nil {
+		response.Failed(c, exception.NotExistOrNotPermission("token not found"))
+		return
+	}
+
+	tk, ok := tkObj.(*token.Token)
+	if !ok {
+		response.Failed(c, exception.NotExistOrNotPermission("token not an *token.Token"))
+		return
+	}
 
 	// 通过token中的userid获取用户对象
 	u, err := a.userSvc.GetUserByID(c.Request.Context(), tk.UserID)
 	if err != nil {
 		response.Failed(c, err)
-		return
-	}
-	// 将user对象放到go请求上下文中
-	ctx = context.WithValue(ctx, user.USER_KEY, u)
-}
-
-// 权限控制
-func (a *TokenAuther) Perm(c *gin.Context) {
-	uObj := ctx.Value(user.USER_KEY)
-	if uObj == nil {
-		response.Failed(c, fmt.Errorf("上下文中的user对象不存在"))
-		return
-	}
-
-	u, ok := uObj.(*user.User)
-	if !ok {
-		response.Failed(c, fmt.Errorf("上下文中的user对象不是 *user.User"))
 		return
 	}
 

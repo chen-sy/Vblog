@@ -39,5 +39,8 @@ const (
 )
 
 const (
-	USER_KEY = "user"
+	CTX_KEY_USER     = "user"
+	CTX_KEY_USERID   = "userid"
+	CTX_KEY_USERNAME = "username"
+	CTX_KEY_USERROLE = "userrole"
 )

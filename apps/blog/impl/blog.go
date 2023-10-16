@@ -9,6 +9,7 @@ import (
 	"gitee.com/chensyi/vblog/apps/blog"
 	"gitee.com/chensyi/vblog/apps/user"
 	"gitee.com/chensyi/vblog/common"
+	"gitee.com/chensyi/vblog/exception"
 )
 
 var _ blog.Service = &blogServiceImpl{}
@@ -21,12 +22,12 @@ func (i *blogServiceImpl) CreateBlog(ctx context.Context, req *blog.CreateBlogRe
 	}
 	// 使用构造函数创建对象
 	ins := blog.NewBlog(req)
-	// 获取上下文中的userid
-	uObj := ctx.Value(user.USER_KEY).(*user.User)
-	if uObj == nil {
+	// 获取上下文中的user对象
+	uObj, ok := ctx.Value(user.CTX_KEY_USER).(*user.User)
+	if !ok {
 		return nil, fmt.Errorf("上下文中的user对象不存在")
 	}
-	ins.CreateBy = uObj.UserName
+	ins.CreateBy = uObj.ID
 	// 发布博客时，添加发布时间
 	if req.States == blog.STATES_PUBLISHED {
 		ins.PublishedAt = time.Now().Unix()
@@ -45,8 +46,16 @@ func (i *blogServiceImpl) DeleteBlog(ctx context.Context, req *blog.DeleteBlogRe
 	if err != nil {
 		return err
 	}
-	//TODO删除博客需要校验是否为本人，和更新一样需要校验，可使用gorm.Scopes复用。db.Scopes(CurBlog(r)).Delete(b)
-	return i.db.WithContext(ctx).Delete(b).Error
+	// 获取上下文中的user对象
+	uObj, ok := ctx.Value(user.CTX_KEY_USER).(*user.User)
+	if !ok {
+		return fmt.Errorf("上下文中的user对象不存在")
+	}
+	if b.CreateBy == uObj.ID {
+		return i.db.WithContext(ctx).Delete(b).Error
+	} else {
+		return fmt.Errorf("无权限")
+	}
 }
 
 // 更新博客
@@ -68,12 +77,12 @@ func (i *blogServiceImpl) UpdateBlog(ctx context.Context, req *blog.UpdateBlogRe
 	default:
 		return nil, fmt.Errorf("更新模式异常: %d", req.UpdateMode)
 	}
-	// 获取上下文中的userid
-	uObj := ctx.Value(user.USER_KEY).(*user.User)
-	if uObj == nil {
+	// 获取上下文中的user对象
+	uObj, ok := ctx.Value(user.CTX_KEY_USER).(*user.User)
+	if !ok {
 		return nil, fmt.Errorf("上下文中的user对象不存在")
 	}
-	err = i.db.WithContext(ctx).Model(ins).Where("id = ? and create_by = ?", ins.ID, uObj.UserName).Updates(ins).Error
+	err = i.db.WithContext(ctx).Model(ins).Where("id = ? and create_by = ?", ins.ID, uObj.ID).Updates(ins).Error
 	if err != nil {
 		return nil, err
 	}
@@ -83,13 +92,23 @@ func (i *blogServiceImpl) UpdateBlog(ctx context.Context, req *blog.UpdateBlogRe
 
 // 获取博客详情
 func (i *blogServiceImpl) GetBlogDetails(ctx context.Context, req *blog.GetBlogDetailsRequest) (*blog.Blog, error) {
-	query := i.db.WithContext(ctx).Model(&blog.Blog{})
-	ins := &blog.Blog{}
-	query = query.Where("id=?", req.Id)
-	if err := query.First(ins).Error; err != nil {
+	// 查询博客是否存在
+	ins, err := i.getBlog(ctx, req.Id)
+	if err != nil {
 		return nil, err
 	}
-	return ins, nil
+	// admin和创建者可直接查看
+	id := ctx.Value(user.CTX_KEY_USERID)
+	role := ctx.Value(user.CTX_KEY_USERROLE)
+	if role == user.ROLE_ADMIN || ins.CreateBy == id {
+		return ins, nil
+	} else {
+		// 非创建者只能查看已发布且公开的
+		if ins.States == blog.STATES_PUBLISHED && ins.VisibleRange == blog.Range_ALL {
+			return ins, nil
+		}
+		return nil, exception.NotExistOrNotPermission("找不到资源")
+	}
 }
 
 // 获取创建者的博客列表
@@ -110,12 +129,12 @@ func (i *blogServiceImpl) GetBlogList(ctx context.Context, req *blog.GetBlogList
 	if req.States != nil {
 		query = query.Where("states = ?", *req.States)
 	}
-	// 获取上下文中的userid
-	uObj := ctx.Value(user.USER_KEY).(*user.User)
-	if uObj == nil {
+	// 获取上下文中的user对象
+	uObj, ok := ctx.Value(user.CTX_KEY_USER).(*user.User)
+	if !ok {
 		return nil, fmt.Errorf("上下文中的user对象不存在")
 	}
-	query = query.Where("create_by = ?", uObj.UserName)
+	query = query.Where("create_by = ?", uObj.ID)
 	// 查询总数
 	err := query.Count(&list.Total).Error
 	if err != nil {
@@ -138,6 +157,7 @@ func (i *blogServiceImpl) SearchBlogs(ctx context.Context, req *blog.SearchBlogs
 	case blog.QUERY_BY_TITLE:
 		query = query.Where("title LIKE ?", "%"+req.Keywords+"%")
 	case blog.QUERY_BY_AUTHOR:
+		//TODO搜索的是用户名，数据库是用户id，需要连表查询
 		query = query.Where("create_by LIKE ?", "%"+req.Keywords+"%")
 	default:
 		return nil, fmt.Errorf("未知的关键字")

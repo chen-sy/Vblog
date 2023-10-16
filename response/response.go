@@ -12,6 +12,7 @@ func Success(c *gin.Context, data any) {
 }
 
 func Failed(c *gin.Context, err error) {
+	defer c.Abort()
 	var e *exception.Exception
 	if v, ok := err.(*exception.Exception); ok {
 		e = v

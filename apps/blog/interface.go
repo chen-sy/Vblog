@@ -52,7 +52,7 @@ type CreateBlogRequest struct {
 	// 可见范围，默认全部
 	VisibleRange VisibleRange `json:"visible_range"`
 	// 创建人即作者, 通过上下文中的user对象获取
-	CreateBy string `json:"create_by"`
+	CreateBy int64 `json:"create_by"`
 	// 状态，由用户控制是否发布，默认草稿
 	States States `json:"states"`
 }

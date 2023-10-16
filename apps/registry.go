@@ -10,5 +10,7 @@ import (
 
 	// Api Handler注册
 	_ "gitee.com/chensyi/vblog/apps/blog/api"
+	_ "gitee.com/chensyi/vblog/apps/comment/api"
 	_ "gitee.com/chensyi/vblog/apps/token/api"
+	_ "gitee.com/chensyi/vblog/apps/user/api"
 )
