@@ -13,7 +13,7 @@ import (
 func NewHttpServer() *HttpServer {
 	// 通过ioc注册ApiHandler路由
 	r := gin.Default()
-	ioc.ApiHandler().RouteRegistry(r.Group("/api/vblog"))
+	ioc.ApiHandler().RouteRegistry(r.Group("/api"))
 
 	return &HttpServer{
 		server: &http.Server{

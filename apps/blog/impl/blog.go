@@ -157,13 +157,22 @@ func (i *blogServiceImpl) SearchBlogs(ctx context.Context, req *blog.SearchBlogs
 	case blog.QUERY_BY_TITLE:
 		query = query.Where("title LIKE ?", "%"+req.Keywords+"%")
 	case blog.QUERY_BY_AUTHOR:
-		//TODO搜索的是用户名，数据库是用户id，需要连表查询
-		query = query.Where("create_by LIKE ?", "%"+req.Keywords+"%")
+		query = query.Where("create_by in (SELECT id FROM `users` WHERE username LIKE ?)", "%"+req.Keywords+"%")
 	default:
 		return nil, fmt.Errorf("未知的关键字")
 	}
-	// 只能查询可见范围为全部，且状态为已发布的文章
-	query = query.Where("visible_range = ? and states = ? ", blog.Range_ALL, blog.STATES_PUBLISHED)
+	// 获取上下文中的角色
+	id := ctx.Value(user.CTX_KEY_USERID)
+	role := ctx.Value(user.CTX_KEY_USERROLE)
+	if role == user.ROLE_ADMIN {
+		// admin可查看全部
+	} else if role == user.ROLE_MEMBER {
+		// 创建者可查看自己的全部和他人已发布且公开的
+		query = query.Where("(create_by=? or (visible_range = ? and states = ? ))", id, blog.Range_ALL, blog.STATES_PUBLISHED)
+	} else {
+		// 游客只能查看已发布且公开的
+		query = query.Where("visible_range = ? and states = ? ", blog.Range_ALL, blog.STATES_PUBLISHED)
+	}
 
 	// 1. 查询总数量
 	err := query.Count(&list.Total).Error
