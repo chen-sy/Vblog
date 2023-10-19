@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"fmt"
 
 	"gitee.com/chensyi/vblog/apps/token"
 	"gitee.com/chensyi/vblog/apps/user"
@@ -39,12 +40,12 @@ func (i *TokenServiceImpl) Login(ctx context.Context, req *token.LoginRequest) (
 	uReq := user.NewGetSingleUserByName(req.UserName)
 	u, err := i.user.GetSingleUser(ctx, uReq)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("用户不存在")
 	}
 	// 校验密码
 	err = u.CheckPassWord(req.PassWord)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("密码错误")
 	}
 	// 颁发token
 	t := token.NewToken()

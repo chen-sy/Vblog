@@ -18,11 +18,8 @@
 各目录的作用：
 - /apps/：业务处理模块
   - /blog/：文章管理模块
-    - /app.go/：博客管理模块
   - /comment/：评论管理模块
-    - /app.go/：博客评论应用服务
   - /token/：鉴权管理模块
-    - /api.go/：
   - /user/：用户管理模块
     - /api/
       - /http.go/：用户对外暴露的接口
@@ -36,13 +33,14 @@
 - /conf/：配置管理
   - config.go：全局配置文件
   - load.go：加载配置
-- /docs/：项目文档
 - /etc/：程序加载的配置文件目录
 - /exception/：异常处理
   - /bussiness/：业务异常
   - /exception/：异常定义
 - /ioc/：对象托管
+- /middleware/：中间件
+  - /auth.go/：鉴权
 - /protocol/：协议服务
 - /response/：web响应
 - /test/：测试模块
-- /ui/：项目前端
+- /web/：项目前端
