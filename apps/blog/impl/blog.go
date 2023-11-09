@@ -29,7 +29,7 @@ func (i *blogServiceImpl) CreateBlog(ctx context.Context, req *blog.CreateBlogRe
 	}
 	ins.CreateBy = uObj.ID
 	// 发布博客时，添加发布时间
-	if req.States == blog.STATES_PUBLISHED {
+	if req.Status == blog.STATUS_PUBLISHED {
 		ins.PublishedAt = time.Now().Unix()
 	}
 	// 保存到数据库
@@ -104,7 +104,7 @@ func (i *blogServiceImpl) GetBlogDetails(ctx context.Context, req *blog.GetBlogD
 		return ins, nil
 	} else {
 		// 非创建者只能查看已发布且公开的
-		if ins.States == blog.STATES_PUBLISHED && ins.VisibleRange == blog.Range_ALL {
+		if ins.Status == blog.STATUS_PUBLISHED && ins.VisibleRange == blog.Range_ALL {
 			return ins, nil
 		}
 		return nil, exception.NotExistOrNotPermission("找不到资源")
@@ -126,8 +126,8 @@ func (i *blogServiceImpl) GetBlogList(ctx context.Context, req *blog.GetBlogList
 	if req.VisibleRange != nil {
 		query = query.Where("visible_range = ?", *req.VisibleRange)
 	}
-	if req.States != nil {
-		query = query.Where("states = ?", *req.States)
+	if req.Status != nil {
+		query = query.Where("status = ?", *req.Status)
 	}
 	// 获取上下文中的user对象
 	uObj, ok := ctx.Value(user.CTX_KEY_USER).(*user.User)
@@ -168,10 +168,10 @@ func (i *blogServiceImpl) SearchBlogs(ctx context.Context, req *blog.SearchBlogs
 		// admin可查看全部
 	} else if role == user.ROLE_MEMBER {
 		// 创建者可查看自己的全部和他人已发布且公开的
-		query = query.Where("(create_by=? or (visible_range = ? and states = ? ))", id, blog.Range_ALL, blog.STATES_PUBLISHED)
+		query = query.Where("(create_by=? or (visible_range = ? and status = ? ))", id, blog.Range_ALL, blog.STATUS_PUBLISHED)
 	} else {
 		// 游客只能查看已发布且公开的
-		query = query.Where("visible_range = ? and states = ? ", blog.Range_ALL, blog.STATES_PUBLISHED)
+		query = query.Where("visible_range = ? and status = ? ", blog.Range_ALL, blog.STATUS_PUBLISHED)
 	}
 
 	// 1. 查询总数量

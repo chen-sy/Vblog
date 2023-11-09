@@ -15,12 +15,6 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      // with options: http://localhost:5173/api/bar-> http://jsonplaceholder.typicode.com/bar
-      // '/api': {
-      //   target: 'http://jsonplaceholder.typicode.com',
-      //   changeOrigin: true,
-      //   rewrite: (path) => path.replace(/^\/api/, ''),
-      // },
       '/api/v1': {
         target: 'http://127.0.0.1:8080'
       }

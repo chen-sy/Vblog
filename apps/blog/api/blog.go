@@ -143,11 +143,11 @@ func (h *apiHandler) GetBlogList(c *gin.Context) {
 	case "own":
 		in.VisibleRange.Set(blog.Range_OWN)
 	}
-	switch c.Query("states") {
+	switch c.Query("status") {
 	case "draft":
-		in.States.Set(blog.STATES_DRAFT)
+		in.Status.Set(blog.STATUS_DRAFT)
 	case "published":
-		in.States.Set(blog.STATES_PUBLISHED)
+		in.Status.Set(blog.STATUS_PUBLISHED)
 	}
 	// 将gin的Context，转换成go Context
 	ctx, err := middleware.NewMiddleware().NewContext(c)

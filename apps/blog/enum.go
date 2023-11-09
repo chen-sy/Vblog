@@ -35,14 +35,14 @@ func (v VisibleRange) Set(x VisibleRange) *VisibleRange {
 }
 
 // 文章状态，草稿/已发布
-type States uint32
+type Status uint32
 
 const (
-	STATES_DRAFT     States = iota // 草稿
-	STATES_PUBLISHED               // 已发布
+	STATUS_DRAFT     Status = iota // 草稿
+	STATUS_PUBLISHED               // 已发布
 )
 
-func (s States) Set(x States) *States {
+func (s Status) Set(x Status) *Status {
 	return &x
 }
 

@@ -32,7 +32,7 @@ func NewCreateBlogRequest() *CreateBlogRequest {
 		Tags:         map[string]string{},
 		BlogType:     TYPE_ORIGINAL,
 		VisibleRange: Range_ALL,
-		States:       STATES_DRAFT,
+		Status:       STATUS_DRAFT,
 	}
 }
 
@@ -54,17 +54,17 @@ type CreateBlogRequest struct {
 	// 创建人即作者, 通过上下文中的user对象获取
 	CreateBy int64 `json:"create_by"`
 	// 状态，由用户控制是否发布，默认草稿
-	States States `json:"states"`
+	Status Status `json:"status"`
 }
 
 // 检查参数，发布时检查
 func (req *CreateBlogRequest) Validate() error {
-	switch req.States {
-	case STATES_DRAFT: // 草稿只需要检查标题
+	switch req.Status {
+	case STATUS_DRAFT: // 草稿只需要检查标题
 		if req.Title == "" {
 			return exception.ValidateError("文章标题不能为空")
 		}
-	case STATES_PUBLISHED:
+	case STATUS_PUBLISHED:
 		if req.Title == "" || req.Content == "" || len(req.Tags) == 0 || req.Abstract == "" {
 			return exception.ValidateError("必填项未填写")
 		}
@@ -124,7 +124,7 @@ type GetBlogListRequest struct {
 	// 可见范围
 	VisibleRange *VisibleRange `json:"visible_range"`
 	// 状态
-	States *States `json:"states"`
+	Status *Status `json:"status"`
 }
 
 func NewBlogList() *BlogList {

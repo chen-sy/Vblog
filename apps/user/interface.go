@@ -31,7 +31,7 @@ func NewCreateUserRequest(req *CreateUserRequest) *CreateUserRequest {
 		UserName: req.UserName,
 		PassWord: req.PassWord,
 		Role:     ROLE_MEMBER,
-		State:    STATE_NORMAL,
+		Status:   STATUS_NORMAL,
 	}
 }
 
@@ -44,7 +44,7 @@ type CreateUserRequest struct {
 	// 用户角色
 	Role Role `json:"role"`
 	// 用户状态
-	State State `json:"state"`
+	Status Status `json:"status"`
 }
 
 // 检查参数
@@ -65,7 +65,7 @@ type UpdateUserRequest struct {
 	Id       int    `json:"id"`
 	UserName string `json:"username"`
 	PassWord string `json:"password"`
-	State    int    `json:"state"`
+	Status   int    `json:"status"`
 }
 
 // 密码加密

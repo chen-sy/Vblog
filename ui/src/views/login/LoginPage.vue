@@ -22,17 +22,18 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { ref } from 'vue'
 import { Message } from '@arco-design/web-vue'
 import { useRouter } from 'vue-router'
-import { state } from '@/stores/localstorage'
-import { LOGIN } from '@/api/login'
+import { state } from '@/stores/app'
+import { LOGIN } from '@/api/token'
 
+// 路由对象
 const router = useRouter()
 
 // 用户登录数据
-const form = reactive({
-  username: state.value.username,
+const form = ref({
+  username: '',
   password: ''
 })
 
@@ -60,7 +61,7 @@ const handleSubmit = async (data) => {
 }
 </script>
 
-<style scoped>
+<style lang="css" scoped>
 .login-form {
   margin-top: 200px;
   width: 600px;

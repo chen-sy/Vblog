@@ -22,12 +22,12 @@ const (
 	ROLE_ADMIN              // 管理员
 )
 
-// 声明一个 State 类型
-type State int
+// 声明一个 Status 类型
+type Status int
 
 const (
-	STATE_NORMAL State = 1  // 正常
-	STATE_CANCEL State = -1 // 失效
+	STATUS_NORMAL Status = 1  // 正常
+	STATUS_CANCEL Status = -1 // 失效
 )
 
 // 单个用户的查询条件，当前支持id、UserName
