@@ -8,3 +8,5 @@ export var LOGIN = (data) => {
         data: data
     })
 }
+// 退出
+export var LOGOUT = (data) => client.delete(`/tokens/`, data)

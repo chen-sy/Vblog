@@ -1,23 +1,18 @@
-import { state } from '@/stores/localstorage'
+import { state } from '@/stores/app'
 
-// 业务守卫的业务逻辑
-// 只需要对去往backend后台的请求进行鉴权: /backend/blog
-// next： 理解为router.push 函数
-export var beforeEachHanler = function (to, from, next) {
-  // 使用indexOf来判断当前url 是否已 /backend开头
-  if (to.path.indexOf('/backend') === 0) {
-    // 需要判断当前用户是否已经登录
-    if (!state.value.isLogin) {
-      // 如果没有登录，需要重定向到登录页面去
-      // 需要获取router对象? 这么不能不用useRoute
-      // 直接跳转到LoginPage去登录
-      // 记录下用户需要 去往的目标页面
-      // /login?to=TagList
-      next({ name: "LoginPage", query: { to: to.name } })
-      return
+export var beforeEach = async (to) => {
+  // 针对去往backend的页面, 才需要登录
+  // 从定向跳转?
+
+  if (to.fullPath.startsWith('/backend')) {
+    debugger
+    if (!state.value.is_login) {
+      debugger
+      // 跳转到登录页面, next就是router push方法
+      // 自己完善: 用户访问的目标页面是: CommentList, 
+      // 跳转到登录页面 登录成功后(携带上目标页面的路由名称), 需要重定向到目标页面去(push)
+      // 直接Return路由
+      return { name: 'Login' }
     }
   }
-
-  // 直接继续后面的路由处理
-  next()
 }

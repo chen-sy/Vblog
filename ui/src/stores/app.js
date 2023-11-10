@@ -5,8 +5,12 @@ import { useStorage } from '@vueuse/core'
 export const state = useStorage(
     'vblog',
     {
-        isLogin: false,
+        is_login: false,
         token: {},
+        menu: {
+            selectedKeys: [],
+            openKeys: []
+        }
     },
     localStorage,
     { mergeDefaults: true }

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-//import { beforeEachHandler } from "./permission";
+import { beforeEach } from "./permission";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,19 +13,19 @@ const router = createRouter({
     {
       // 登录页面
       path: "/login",
-      name: "LoginPage",
-      component: () => import("@/views/login/LoginPage.vue")
+      name: "Login",
+      component: () => import("@/views/login/LoginView.vue")
     },
     {
       // 前台页面
       path: "/frontend",
       name: "FrontendLayout",
-      component: () => import("@/views/frontend/FrontendLayout.vue"),
+      component: () => import("@/views/frontend/LayoutView.vue"),
       children: [
         {
           path: "blog/list",
           name: "FrontendBlogList",
-          component: () => import("@/views/frontend/BlogList.vue"),
+          component: () => import("@/views/frontend/blog/ListView.vue"),
         }
       ]
     },
@@ -33,13 +33,21 @@ const router = createRouter({
       // 后台页面
       path: "/backend",
       name: "BackendLayout",
-      component: () => import("@/views/backend/BackendLayout.vue"),
+      component: () => import("@/views/backend/LayoutView.vue"),
+      // 当访问/backend路径时，应该重定向到BackendBlogList页面。
+      redirect: { name: 'BackendBlogList' },
       children: [
         {
           path: "blog/list",
           name: "BackendBlogList",
-          component: () => import("@/views/backend/blog/BlogList.vue"),
-        }
+          component: () => import("@/views/backend/blog/ListView.vue"),
+        },
+        {
+          path: 'blog/edit',
+          name: 'BlogEdit',
+          //..能直接跳转到页面
+          component: () => import('../views/backend/blog/EditView.vue')
+        },
       ]
     },
     {
@@ -59,6 +67,6 @@ const router = createRouter({
 
 
 // 补充导航守卫
-//router.beforeEach(beforeEachHandler)
+router.beforeEach(beforeEach)
 
 export default router

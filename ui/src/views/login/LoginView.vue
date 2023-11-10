@@ -52,12 +52,17 @@ const handleSubmit = async (data) => {
         let to = 'BackendBlogList'
         router.push({ name: to })
       }
-      state.value.isLogin = true
+      state.value.is_login = true
       state.value.username = resp.username
     } catch (error) {
       Message.error(`登录失败: ${error}`)
     }
   }
+  //调试
+  state.value.is_login = true
+  state.value.username = "admin"
+  let to = 'BlogEdit'
+  router.push({ name: to })
 }
 </script>
 

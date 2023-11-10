@@ -59,19 +59,19 @@ npm install dayjs
 import dayjs from 'dayjs'
 ```
 
-###  Markdown 编辑器 [v-md-editor](http://ckang1229.gitee.io/vue-markdown-editor/zh/)
+###  Markdown 编辑器 [md-editor-v3]
 
 ##### 安装
 
 ```sh
-npm install v-md-editor
+npm install md-editor-v3
 ```
 
 ##### 引入
 ```js
-import VMdEditor from 'v-md-editor'
-import 'v-md-editor/dist/style/v-md-editor.css'
-app.use(VMdEditor)
+import MdEditor from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css';
+app.use(MdEditor)
 ```
 
 

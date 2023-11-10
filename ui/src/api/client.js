@@ -34,7 +34,6 @@ instance.interceptors.response.use(
     },
     // 请求失败
     error => {
-        debugger
         // 处理响应错误
         console.log(error)
         // 默认错误信息使用error.message

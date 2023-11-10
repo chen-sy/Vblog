@@ -1,3 +1,5 @@
+// 引入样式
+import '@arco-design/web-vue/dist/arco.css'
 import './assets/main.css'
 
 import { createApp } from 'vue'
@@ -13,8 +15,6 @@ app.use(router)
 
 // 引入UI组件
 import ArcoVue from '@arco-design/web-vue'
-// 引入样式
-import '@arco-design/web-vue/dist/arco.css'
 // 引入图标
 import ArcoVueIcon from '@arco-design/web-vue/es/icon'
 // 使用UI组件库

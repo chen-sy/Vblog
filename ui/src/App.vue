@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { state } from '@/stores/localstorage'
+import { state } from '@/stores/app'
 
 // useRouter 返回当前的router实例对象
 const router = useRouter()
@@ -13,7 +13,7 @@ const Home = () => {
   router.push({ name: 'home' })
 }
 const Login = () => {
-  router.push({ name: 'LoginPage' })
+  router.push({ name: 'Login' })
 }
 const Logout = () => {
   state.value.isLogin = false
